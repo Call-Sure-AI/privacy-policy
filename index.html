@@ -127,6 +127,37 @@
         [dir="rtl"] .header {
             flex-direction: row-reverse;
         }
+        .language-selector {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.language-selector select {
+    background: transparent;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.language-selector select option {
+    background: #333;
+    color: white;
+}
+
+/* RTL support for language selector */
+[dir="rtl"] .language-selector {
+    left: 20px;
+    right: auto;
+}
     </style>
 </head>
 <body>
