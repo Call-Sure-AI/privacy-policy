@@ -67,6 +67,9 @@ function changeLanguage() {
     headerTitle.textContent = config.title;
     document.title = `${config.title} - Callsure AI`;
 
+    // Update dates immediately
+    updateDates(selectedLang);
+
     // Fetch and load content
     fetch(langFiles[selectedLang])
         .then(response => {
@@ -77,8 +80,6 @@ function changeLanguage() {
         })
         .then(data => {
             contentContainer.innerHTML = data;
-            // Update dates after content is loaded
-            updateDates(selectedLang);
         })
         .catch(error => {
             console.error("Error loading language content:", error);
@@ -88,49 +89,81 @@ function changeLanguage() {
 
 // Function to format date based on locale
 function formatDate(date, locale) {
-    return date.toLocaleDateString(locale, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
+    try {
+        return date.toLocaleDateString(locale, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    } catch (error) {
+        console.error('Error formatting date:', error);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
 }
 
 // Function to update dates with proper localization
 function updateDates(lang) {
-    const config = languageConfig[lang];
-    const today = new Date();
-    
-    const lastModified = new Date(today);
-    lastModified.setDate(lastModified.getDate() - 35);
-    
-    const effectiveDate = new Date(today);
-    effectiveDate.setDate(effectiveDate.getDate() - 21);
+    try {
+        const config = languageConfig[lang];
+        const today = new Date();
+        
+        const lastModified = new Date(today);
+        lastModified.setDate(lastModified.getDate() - 35);
+        
+        const effectiveDate = new Date(today);
+        effectiveDate.setDate(effectiveDate.getDate() - 21);
 
-    // Format and update dates in the correct locale
-    const formattedLastModified = formatDate(lastModified, config.dateLocale);
-    const formattedEffectiveDate = formatDate(effectiveDate, config.dateLocale);
+        // Get the date containers
+        const lastModifiedContainer = document.querySelector('.last-modified-date');
+        const effectiveDateContainer = document.querySelector('.effective-date-date');
+        const versionContainer = document.querySelector('.version-number');
 
-    // Find and update all date elements
-    const lastModifiedElements = document.querySelectorAll('.last-modified');
-    const effectiveDateElements = document.querySelectorAll('.effective-date');
-    const versionElements = document.querySelectorAll('.version');
+        if (lastModifiedContainer) {
+            lastModifiedContainer.textContent = formatDate(lastModified, config.dateLocale);
+        }
 
-    lastModifiedElements.forEach(el => {
-        el.innerHTML = `${config.lastModified} ${formattedLastModified}`;
-    });
+        if (effectiveDateContainer) {
+            effectiveDateContainer.textContent = formatDate(effectiveDate, config.dateLocale);
+        }
 
-    effectiveDateElements.forEach(el => {
-        el.innerHTML = `${config.effectiveDate} ${formattedEffectiveDate}`;
-    });
+        if (versionContainer) {
+            versionContainer.textContent = '3.0';
+        }
 
-    versionElements.forEach(el => {
-        el.innerHTML = `${config.version} 3.0`;
-    });
+        // Update the labels
+        const lastModifiedLabel = document.querySelector('.last-modified');
+        const effectiveDateLabel = document.querySelector('.effective-date');
+        const versionLabel = document.querySelector('.version');
+
+        if (lastModifiedLabel) {
+            lastModifiedLabel.textContent = config.lastModified;
+        }
+
+        if (effectiveDateLabel) {
+            effectiveDateLabel.textContent = config.effectiveDate;
+        }
+
+        if (versionLabel) {
+            versionLabel.textContent = config.version;
+        }
+
+    } catch (error) {
+        console.error('Error updating dates:', error);
+    }
 }
 
-// Initialize on page load
+// Initialize when the page loads
 window.onload = function() {
     // Set default language (English) and load content
-    document.getElementById('languageSelect').value = 'en';
-    changeLanguage();
+    const select = document.getElementById('languageSelect');
+    if (select) {
+        select.value = 'en';
+        changeLanguage();
+    } else {
+        console.error('Language selector not found');
+    }
 };
